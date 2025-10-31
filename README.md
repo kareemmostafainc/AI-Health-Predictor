@@ -1,50 +1,51 @@
 # AI Health Predictor
 
 ## Overview
-AI Health Predictor is a professional machine learning web application designed to estimate the risk of chronic diseases such as diabetes and heart disease using simple medical data inputs.  
-It combines predictive analytics, explainable AI, and interactive visualization to help users understand their health profile in a data-driven way.
+**AI Health Predictor** is a professional machine learning web application designed to estimate the risk of chronic diseases such as **diabetes** and **heart disease** using simple medical data inputs.  
+It integrates **predictive modeling**, **explainable AI**, and **interactive visualization** to provide users with transparent and data-driven health insights.
 
 ---
 
 ## Features
-1. **Data Input Form** – Users can enter medical attributes such as age, BMI, blood pressure, and glucose level.  
-2. **AI Model Prediction** – A trained ML model (Scikit-learn) generates a probability score for disease risk.  
-3. **Explainable AI** – SHAP-based visual explanations clarify how each feature contributed to the model’s decision.  
-4. **Result Dashboard** – Displays prediction results with dynamic charts and personalized health insights.  
-5. **Batch CSV Upload** – Allows uploading multiple records for group health prediction.
+1. **Smart Data Input Form** – Collects user medical attributes such as age, BMI, blood pressure, and glucose level.  
+2. **AI Risk Prediction** – Uses a trained Scikit-learn model to estimate the probability of developing a chronic disease.  
+3. **Explainable AI (XAI)** – Employs SHAP visualizations to show how each feature influenced the prediction.  
+4. **Interactive Dashboard** – Displays prediction results, confidence scores, and personalized health insights.  
+5. **Batch Prediction Mode** – Allows uploading CSV files for group health risk prediction.  
+6. **Secure and Lightweight** – Built with Flask, ensuring fast, secure, and efficient performance.
 
 ---
 
 ## Project Structure
 AI-Health-Predictor/  
 │  
-├── README.md  
-├── requirements.txt  
-├── .gitignore  
-├── LICENSE  
-├── app.py  
+├── README.md                 → Project documentation  
+├── requirements.txt          → Python dependencies  
+├── .gitignore                → Files and folders excluded from Git  
+├── LICENSE                   → MIT open-source license  
+├── app.py                    → Flask web application entry point  
 │  
 ├── model/  
-│   ├── train_model.py  
-│   ├── predict.py  
-│   └── model.pkl  
+│   ├── train_model.py        → Script for training and saving ML model  
+│   ├── predict.py            → Handles predictions for web requests  
+│   └── model.pkl             → Serialized trained model (generated after training)  
 │  
 ├── data/  
-│   ├── sample_data.csv  
-│   └── preprocessing.py  
+│   ├── sample_data.csv       → Example medical dataset  
+│   └── preprocessing.py      → Preprocessing pipeline for cleaning and scaling data  
 │  
 ├── utils/  
-│   ├── explainability.py  
-│   └── helpers.py  
+│   ├── explainability.py     → SHAP explainability module  
+│   └── helpers.py            → Helper functions for model and app  
 │  
 ├── static/  
 │   └── assets/  
-│       ├── style.css  
-│       └── script.js  
+│       ├── style.css         → Frontend styling  
+│       └── script.js         → Client-side interactivity  
 │  
 └── templates/  
-    ├── index.html  
-    └── result.html  
+    ├── index.html            → Input form and landing page  
+    └── result.html           → Results and visualization dashboard  
 
 ---
 
@@ -54,20 +55,42 @@ AI-Health-Predictor/
 - **Machine Learning:** Scikit-learn  
 - **Explainable AI:** SHAP  
 - **Visualization:** Matplotlib, JavaScript  
-- **Frontend:** HTML5, CSS3, JS (Vanilla)
+- **Frontend:** HTML5, CSS3, JS (Vanilla)  
 
 ---
 
 ## Installation
 1. Clone the repository:  
    `git clone https://github.com/kareemmostafainc/AI-Health-Predictor.git`  
-   `cd AI-Health-Predictor`
+   `cd AI-Health-Predictor`  
 
 2. Install the required dependencies:  
-   `pip install -r requirements.txt`
+   `pip install -r requirements.txt`  
 
 3. Run the application:  
-   `python app.py`
+   `python app.py`  
+
+---
+
+## How It Works
+1. The user enters health metrics manually or uploads a CSV file.  
+2. The backend model preprocesses the input data using `data/preprocessing.py`.  
+3. The trained model in `model/model.pkl` makes predictions using logistic regression.  
+4. The output is visualized with an explainable SHAP summary and displayed on `result.html`.  
+
+---
+
+## Example Input/Output
+
+**Example Input (User form):**  
+| Age | Gender | BMI | Glucose | Blood Pressure |  
+|-----|---------|-----|----------|----------------|  
+| 45  | Male    | 28  | 110      | 130            |  
+
+**Example Output:**  
+- Disease Risk Probability: **0.72 (High)**  
+- Recommendation: “Consider consulting a physician for regular screening.”  
+- Explanation: Glucose level and BMI contributed most to the predicted risk.
 
 ---
 
