@@ -1,0 +1,55 @@
+# ===============================
+# AI Health Predictor - Git Ignore Rules
+# Author: Kareem Mostafa
+# ===============================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+ENV/
+
+# --- Machine Learning Artifacts ---
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.sav
+
+# --- Jupyter / Temp Files ---
+.ipynb_checkpoints
+*.ipynb
+*.csv~
+*.tmp
+
+# --- Logs & Cache ---
+*.log
+*.cache/
+.cache/
+logs/
+debug.log
+
+# --- IDE & Editor Files ---
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Deployment / Build ---
+build/
+dist/
+*.egg-info/
+*.spec
+
+# --- Data Files (Sensitive or Generated) ---
+data/*.csv
+!data/sample_data.csv
