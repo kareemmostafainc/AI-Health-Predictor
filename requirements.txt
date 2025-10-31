@@ -1,0 +1,25 @@
+# ===============================
+# AI Health Predictor - Dependencies
+# Author: Kareem Mostafa
+# ===============================
+
+# Core Framework
+Flask==3.0.3
+
+# Machine Learning
+scikit-learn==1.5.2
+numpy==1.26.4
+pandas==2.2.3
+
+# Explainable AI
+shap==0.46.0
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# Utilities
+joblib==1.4.2
+
+# Optional (for CSV and security handling)
+werkzeug==3.0.4
