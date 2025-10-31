@@ -34,19 +34,19 @@ def preprocess_data(df: pd.DataFrame):
     """Clean and prepare dataset for training."""
     df = df.copy()
 
-    # Encode gender
+    # Encode gender if exists
     if "gender" in df.columns:
         encoder = LabelEncoder()
         df["gender"] = encoder.fit_transform(df["gender"])
 
-    # Handle missing values
+    # Fill missing values with median
     df = df.fillna(df.median(numeric_only=True))
 
     # Features and target
     X = df.drop(columns=["disease_risk"], errors="ignore")
     y = df["disease_risk"] if "disease_risk" in df.columns else np.random.randint(0, 2, len(df))
 
-    # Scaling
+    # Scale features
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
@@ -103,6 +103,8 @@ def main():
 
     print("Saving model...")
     save_model(model, scaler)
+
+    print("Training complete.")
 
 if __name__ == "__main__":
     main()
