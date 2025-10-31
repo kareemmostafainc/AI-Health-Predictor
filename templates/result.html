@@ -1,0 +1,102 @@
+<!-- ==========================================================
+     AI Health Predictor - Prediction Result Page
+     Author: Kareem Mostafa
+     ========================================================== -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result - AI Health Predictor</title>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/style.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- ----------------------------------------------------------
+         Header
+    ---------------------------------------------------------- -->
+    <header>
+        AI Health Predictor
+    </header>
+
+    <!-- ----------------------------------------------------------
+         Main Content
+    ---------------------------------------------------------- -->
+    <main>
+        <div class="container">
+            <h2 style="margin-bottom: 1rem; text-align:center; color:#1f2937;">Health Prediction Result</h2>
+
+            <div class="result-box">
+                <div class="result-title">Predicted Health Risk</div>
+                <div class="result-value">
+                    <strong>Probability:</strong> {{ (probability * 100) | round(2) }}% <br>
+                    <strong>Risk Category:</strong> {{ risk_category }}
+                </div>
+
+                <div id="chartContainer" class="chart">
+                    <canvas id="explanationChart"></canvas>
+                </div>
+            </div>
+
+            <div style="margin-top:2rem; text-align:center;">
+                <a href="{{ url_for('home') }}" style="
+                    background-color:#2563eb;
+                    color:white;
+                    padding:0.7rem 1.5rem;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:500;
+                    font-size:1rem;
+                    transition:background-color 0.25s ease-in-out;
+                " onmouseover="this.style.backgroundColor='#1e3a8a'" 
+                  onmouseout="this.style.backgroundColor='#2563eb'">
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- ----------------------------------------------------------
+         Footer
+    ---------------------------------------------------------- -->
+    <footer>
+        © 2025 AI Health Predictor | Developed by Kareem Mostafa
+    </footer>
+
+    <!-- Script for Chart Rendering -->
+    <script>
+        const explanation = {{ explanation | tojson }};
+        const ctx = document.getElementById("explanationChart").getContext("2d");
+
+        if (explanation && Object.keys(explanation).length > 0) {
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: Object.keys(explanation),
+                    datasets: [{
+                        label: "Feature Importance",
+                        data: Object.values(explanation),
+                        backgroundColor: "rgba(37, 99, 235, 0.6)",
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
