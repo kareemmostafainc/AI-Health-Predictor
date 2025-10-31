@@ -4,124 +4,139 @@
 # ==========================================================
 
 from flask import Flask, render_template, request, jsonify
-import numpy as np
 import pandas as pd
-import joblib
 import os
+import traceback
 
-from utils.explainability import generate_shap_plot
-from data.preprocessing import preprocess_input_data
-from model.predict import predict_risk
+# Import compatible modules
+from model.predict import load_model, preprocess_input, predict_health_risk
+from data.preprocessing import DataPreprocessor
+from utils.explainability import ExplainabilityEngine
 
 # ----------------------------------------------------------
-# Flask App Configuration
+# Flask Configuration
 # ----------------------------------------------------------
 app = Flask(__name__)
-
 MODEL_PATH = "model/model.pkl"
 
-# Load pre-trained model
+# ----------------------------------------------------------
+# Load Model and Scaler
+# ----------------------------------------------------------
 try:
-    model = joblib.load(MODEL_PATH)
+    model, scaler = load_model(MODEL_PATH)
+    print(f"Model loaded successfully from {MODEL_PATH}")
 except Exception as e:
-    raise RuntimeError(f"Failed to load model: {e}")
+    print(f"Warning: Could not load model from {MODEL_PATH} -> {e}")
+    model, scaler = None, None
 
 # ----------------------------------------------------------
-# Routes
+# Home Route
 # ----------------------------------------------------------
-
 @app.route("/")
 def index():
-    """Render home page."""
     return render_template("index.html")
 
-
+# ----------------------------------------------------------
+# Prediction Route
+# ----------------------------------------------------------
 @app.route("/predict", methods=["POST"])
 def predict():
-    """Handle prediction requests from form or API."""
     try:
-        # --- Handle Form Data ---
         if request.form:
-            age = float(request.form.get("age", 0))
-            bmi = float(request.form.get("bmi", 0))
-            glucose = float(request.form.get("glucose", 0))
-            blood_pressure = float(request.form.get("blood_pressure", 0))
-            gender = request.form.get("gender", "male")
-
-            # Prepare data
-            input_data = pd.DataFrame([{
-                "age": age,
-                "bmi": bmi,
-                "glucose": glucose,
-                "blood_pressure": blood_pressure,
-                "gender": gender
-            }])
-
-            processed_data = preprocess_input_data(input_data)
-
-            # Predict
-            prediction, probability = predict_risk(model, processed_data)
-
-            # SHAP explainability
-            shap_plot_path = generate_shap_plot(model, processed_data)
-
-            result = {
-                "risk": "High" if prediction == 1 else "Low",
-                "probability": round(float(probability) * 100, 2),
-                "shap_plot": shap_plot_path
+            # Get form data safely
+            data = {
+                "age": float(request.form.get("age", 0)),
+                "gender": request.form.get("gender", "male"),
+                "bmi": float(request.form.get("bmi", 0)),
+                "blood_pressure": float(request.form.get("blood_pressure", 0)),
+                "glucose_level": float(request.form.get("glucose_level", 0)),
+                "cholesterol_level": float(request.form.get("cholesterol_level", 0)),
+                "heart_rate": float(request.form.get("heart_rate", 0)),
             }
-
-            return render_template("result.html", result=result)
-
-        # --- Handle JSON Request (API Call) ---
         elif request.is_json:
-            content = request.get_json()
-            df = pd.DataFrame([content])
-            processed_data = preprocess_input_data(df)
-            prediction, probability = predict_risk(model, processed_data)
-
-            response = {
-                "prediction": int(prediction),
-                "probability": round(float(probability) * 100, 2)
-            }
-            return jsonify(response)
-
+            data = request.get_json()
         else:
             return jsonify({"error": "Invalid input format"}), 400
 
+        # Convert to DataFrame
+        df = pd.DataFrame([data])
+
+        # Preprocessing
+        dp = DataPreprocessor()
+        X_scaled, _ = dp.transform(df)
+
+        if model is None or scaler is None:
+            return jsonify({"error": "Model not available"}), 503
+
+        processed = preprocess_input(df, scaler)
+
+        # Prediction
+        probabilities = predict_health_risk(model, processed)
+        probability = float(probabilities[0])
+        risk_category = "High" if probability >= 0.5 else "Low"
+
+        # Explainability
+        explanation = {}
+        try:
+            engine = ExplainabilityEngine(MODEL_PATH)
+            background = None
+            sample_path = os.path.join("data", "sample_data.csv")
+            if os.path.exists(sample_path):
+                bg_df = pd.read_csv(sample_path).drop(columns=["disease_risk"], errors="ignore")
+                background = bg_df.values
+            explainer = engine.initialize_explainer(background if background is not None else processed)
+            shap_values = engine.compute_shap_values(processed)
+
+            # Summarize SHAP values
+            import numpy as np
+            arr = shap_values.values if hasattr(shap_values, "values") else shap_values
+            mean_imp = np.abs(arr).mean(axis=0).tolist()
+            feature_names = list(df.columns)
+            explanation = dict(zip(feature_names, [float(x) for x in mean_imp]))
+        except Exception:
+            explanation = {}
+
+        # Render result page
+        return render_template(
+            "result.html",
+            probability=probability,
+            risk_category=risk_category,
+            explanation=explanation
+        )
+
     except Exception as e:
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
-
+# ----------------------------------------------------------
+# Batch Prediction Route
+# ----------------------------------------------------------
 @app.route("/batch", methods=["POST"])
 def batch_predict():
-    """Batch prediction for uploaded CSV files."""
     try:
         if "file" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
         file = request.files["file"]
         df = pd.read_csv(file)
-        processed_data = preprocess_input_data(df)
-        predictions = []
-        probabilities = []
 
-        for _, row in processed_data.iterrows():
-            pred, prob = predict_risk(model, pd.DataFrame([row]))
-            predictions.append(int(pred))
-            probabilities.append(round(float(prob) * 100, 2))
+        if model is None or scaler is None:
+            return jsonify({"error": "Model not available"}), 503
 
-        df["Prediction"] = predictions
-        df["Risk (%)"] = probabilities
+        processed = preprocess_input(df, scaler)
+        probabilities = predict_health_risk(model, processed)
+        df["RiskProbability"] = probabilities
 
         output_path = "data/batch_results.csv"
         df.to_csv(output_path, index=False)
 
-        return jsonify({"message": "Batch prediction complete", "output_file": output_path})
-
+        return jsonify({
+            "message": "Batch prediction completed successfully",
+            "output_file": output_path
+        })
     except Exception as e:
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
-
 
 # ----------------------------------------------------------
 # Run Application
