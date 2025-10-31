@@ -17,58 +17,66 @@ It integrates **predictive modeling**, **explainable AI**, and **interactive vis
 ---
 
 ## Project Structure
-AI-Health-Predictor/  
-│  
-├── README.md                 → Project documentation  
-├── requirements.txt          → Python dependencies  
-├── .gitignore                → Files and folders excluded from Git  
-├── LICENSE                   → MIT open-source license  
-├── app.py                    → Flask web application entry point  
-│  
-├── model/  
-│   ├── train_model.py        → Script for training and saving ML model  
-│   ├── predict.py            → Handles predictions for web requests  
-│   └── model.pkl             → Serialized trained model (generated after training)  
-│  
-├── data/  
-│   ├── sample_data.csv       → Example medical dataset  
-│   └── preprocessing.py      → Preprocessing pipeline for cleaning and scaling data  
-│  
-├── utils/  
-│   ├── explainability.py     → SHAP explainability module  
-│   └── helpers.py            → Helper functions for model and app  
-│  
-├── static/  
-│   └── assets/  
-│       ├── style.css         → Frontend styling  
-│       └── script.js         → Client-side interactivity  
-│  
-└── templates/  
-    ├── index.html            → Input form and landing page  
-    └── result.html           → Results and visualization dashboard  
-
----
-
-## Technical Stack
-- **Language:** Python 3.11  
-- **Framework:** Flask  
-- **Machine Learning:** Scikit-learn  
-- **Explainable AI:** SHAP  
-- **Visualization:** Matplotlib, JavaScript  
-- **Frontend:** HTML5, CSS3, JS (Vanilla)  
+```
+AI-Health-Predictor/
+│
+├── app.py                     # Flask web app entry point
+├── requirements.txt            # Python dependencies
+├── README.md                   # Project documentation
+├── LICENSE                     # MIT open-source license
+├── .gitignore                  # Git ignored files
+│
+├── model/                      # Machine Learning model folder
+│   ├── train_model.py          # Script to train & save the model
+│   ├── predict.py              # Handles prediction requests
+│   └── model.pkl               # Serialized trained model (generated)
+│
+├── data/                       # Data & preprocessing scripts
+│   ├── sample_data.csv         # Example medical dataset
+│   └── preprocessing.py        # Data cleaning & scaling pipeline
+│
+├── utils/                      # Utility and helper functions
+│   ├── explainability.py       # SHAP explainability module
+│   └── helpers.py              # General helper functions
+│
+├── static/                     # Static frontend files
+│   └── assets/
+│       ├── style.css           # CSS styling
+│       └── script.js           # Client-side JS logic
+│
+└── templates/                  # HTML templates
+    ├── index.html              # Input form & landing page
+    └── result.html             # Results & SHAP visualization dashboard
+```
 
 ---
 
 ## Installation
 1. Clone the repository:  
-   `git clone https://github.com/kareemmostafainc/AI-Health-Predictor.git`  
-   `cd AI-Health-Predictor`  
+   ```bash
+   git clone https://github.com/kareemmostafainc/AI-Health-Predictor.git
+   cd AI-Health-Predictor
+   ```
 
-2. Install the required dependencies:  
-   `pip install -r requirements.txt`  
+2. (Optional) Create and activate a virtual environment:  
+   ```bash
+   python -m venv venv
+   source venv/bin/activate       # For macOS/Linux
+   venv\Scripts\activate          # For Windows
+   ```
 
-3. Run the application:  
-   `python app.py`  
+3. Install the required dependencies:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the application:  
+   ```bash
+   python app.py
+   ```
+
+5. Open your browser and go to:  
+   http://127.0.0.1:5000
 
 ---
 
