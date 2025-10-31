@@ -1,0 +1,12 @@
+[Placeholder] 
+This file will be generated automatically after training the model.
+
+File Name: model.pkl
+Purpose: Stores the serialized machine learning model and scaler objects.
+
+Created By: train_model.py
+Format: joblib (contains Python dictionary with keys: "model" and "scaler")
+
+Note: 
+This placeholder exists for repository completeness only.
+Run 'python model/train_model.py' to generate the actual model file.
